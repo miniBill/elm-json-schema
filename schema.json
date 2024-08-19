@@ -1,0 +1,146 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "anyOf": [
+        { "$ref": "#/definitions/Application" },
+        { "$ref": "#/definitions/Package" }
+    ],
+    "definitions": {
+        "Package": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "const": "package"
+                },
+                "name": {
+                    "type": "string",
+                    "pattern": "^[^/]+/[^/]+$"
+                },
+                "summary": {
+                    "type": "string"
+                },
+                "license": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                },
+                "exposed-modules": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "patternProperties": {
+                                ".*": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "required": []
+                        }
+                    ]
+                },
+                "elm-version": {
+                    "$ref": "#/definitions/Range"
+                },
+                "dependencies": {
+                    "$ref": "#/definitions/PackageDependencies"
+                },
+                "test-dependencies": {
+                    "$ref": "#/definitions/PackageDependencies"
+                }
+            },
+            "required": [
+                "dependencies",
+                "elm-version",
+                "exposed-modules",
+                "license",
+                "name",
+                "summary",
+                "test-dependencies",
+                "type",
+                "version"
+            ]
+        },
+        "Application": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "const": "application"
+                },
+                "source-directories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "elm-version": {
+                    "$ref": "#/definitions/Version"
+                },
+                "dependencies": {
+                    "$ref": "#/definitions/ApplicationDependenciesGroup"
+                },
+                "test-dependencies": {
+                    "$ref": "#/definitions/ApplicationDependenciesGroup"
+                }
+            },
+            "required": [
+                "dependencies",
+                "elm-version",
+                "source-directories",
+                "test-dependencies",
+                "type"
+            ]
+        },
+        "ApplicationDependenciesGroup": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "direct": {
+                    "$ref": "#/definitions/ApplicationDependencies"
+                },
+                "indirect": {
+                    "$ref": "#/definitions/ApplicationDependencies"
+                }
+            },
+            "required": ["direct", "indirect"]
+        },
+        "ApplicationDependencies": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+                "^[^/]+/[^/]+$": {
+                    "$ref": "#/definitions/Version"
+                }
+            },
+            "required": []
+        },
+        "PackageDependencies": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+                "^[^/]+/[^/]+$": {
+                    "$ref": "#/definitions/Range"
+                }
+            },
+            "required": []
+        },
+        "Range": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+ <= v < [0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "Version": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        }
+    }
+}
